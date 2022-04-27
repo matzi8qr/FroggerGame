@@ -1,4 +1,3 @@
-import code
 import arcade
 import random
 
@@ -10,6 +9,12 @@ def main():
     window.setup()
     arcade.run()
 
+class Car(arcade.Sprite):
+    
+    SPEED = 3
+    
+    def update(self):
+        self.center_x += self.SPEED
 
 class Window(arcade.Window):
 
@@ -22,12 +27,19 @@ class Window(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
+        #sprite lists
+        self.cars = None
+
     def setup(self):
+        #sprite lists
+        self.cars = arcade.SpriteList()
+        
         self.NEXT = self.init_map()
 
     def on_draw(self):
         self.clear()
         self.draw_rows()
+        self.cars.draw()
 
     def on_update(self, delta_time):
         #shh
@@ -51,6 +63,17 @@ class Window(arcade.Window):
     def generate_row(self, possibilities):
         #generate row based on colors possibilities
         random_code = random.choice(possibilities)
+
+        #generate spritelist for the row
+        if random_code == self.ROAD:
+            for i in range(3):
+                random_car_sprite = random.choice(["Sprites/car1.png", "Sprites/car2.png", "Sprites/car3.png", 
+                                        "Sprites/truck1.png", "Sprites/truck2.png"])
+                car = Car(random_car_sprite)
+                car.center_x = random.randint(0, SCREEN_WIDTH)
+                car.center_y = 300
+                self.cars.append(car)
+        
         self.ROWS.append(random_code)
         
         #return possibilities for next row
@@ -71,6 +94,7 @@ class Window(arcade.Window):
         for row in range(10):
             y_coord = y_interval * (2 * row + 1)
             arcade.draw_rectangle_filled(SCREEN_WIDTH/2, y_coord, SCREEN_WIDTH, 2 * y_interval, color_dict[self.ROWS[row]])
+
 
     #cycle_map handles the "infinite" map
     def cycle_map(self):
