@@ -14,6 +14,7 @@ def main():
 class Window(arcade.Window):
 
     ROWS = []
+    NEXT = []
     SAFE = 0
     ROAD = 1
     RIVER = 2
@@ -22,7 +23,7 @@ class Window(arcade.Window):
         super().__init__(width, height, title)
 
     def setup(self):
-        next = self.init_map()
+        self.NEXT = self.init_map()
 
     def on_draw(self):
         self.clear()
@@ -33,7 +34,8 @@ class Window(arcade.Window):
         pass
 
     def on_key_press(self, key, modifiers):
-        pass
+        if key == arcade.key.UP or key == arcade.key.W:
+            self.cycle_map()
 
     #Boil down the attribute of the map into simplest form: a list of rows.
     def init_map(self):
@@ -55,11 +57,11 @@ class Window(arcade.Window):
         if random_code == self.SAFE: # prevent 2 safe rows in a row
             return [self.ROAD, self.RIVER]
         if possibilities == [self.ROAD]: # prevent road from running into river, 
-                                         # allowing for safe if it was forced to be a road (below)
+                                         # allowing for safe row if it was forced to be a road (below)
             return [self.SAFE, self.SAFE, self.ROAD]
-        if random_code == self.ROAD: # insure roads generate in pairs
+        if random_code == self.ROAD:     # insure roads generate in pairs
             return [self.ROAD]
-        if random_code == self.RIVER: # prevent river from running into road
+        if random_code == self.RIVER:    # prevent river from running into road
             return [self.SAFE, self.RIVER, self.SAFE, self.RIVER, self.SAFE]
 
     #draw the map onto the screen
@@ -70,7 +72,11 @@ class Window(arcade.Window):
             y_coord = y_interval * (2 * row + 1)
             arcade.draw_rectangle_filled(SCREEN_WIDTH/2, y_coord, SCREEN_WIDTH, 2 * y_interval, color_dict[self.ROWS[row]])
 
-
+    #cycle_map handles the "infinite" map
+    def cycle_map(self):
+        self.NEXT = self.generate_row(self.NEXT)
+        self.ROWS.pop(0)
+        
 
 
 
