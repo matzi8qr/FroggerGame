@@ -14,6 +14,7 @@ class Car(arcade.Sprite):
     SPEED = 3
     
     def update(self):
+        # check car overlap
         self.center_x += self.SPEED
 
 class Window(arcade.Window):
