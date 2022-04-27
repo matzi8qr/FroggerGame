@@ -32,14 +32,15 @@ class Window(arcade.Window):
     def on_key_press(self, key, modifiers):
         pass
 
+    #Boil down the attribute of the map into simplest form: a list of rows.
     def create_rows(self):
         rows = []
         colors = [arcade.color.RED, arcade.color.BLUE, arcade.color.GREEN]
-        y_coord = SCREEN_HEIGHT/20
+        y_interval = SCREEN_HEIGHT/20
         for row_num in range(10):
             myColor = random.choice(colors)
-            row_rect = arcade.create_rectangle_filled(SCREEN_WIDTH/2, y_coord * (2 * row_num + 1), 
-                                                        SCREEN_WIDTH, 2 * y_coord, myColor)
+            row_rect = arcade.create_rectangle_filled(SCREEN_WIDTH/2, y_interval * (2 * row_num + 1), 
+                                                        SCREEN_WIDTH, 2 * y_interval, myColor)
             rows.append(row_rect)
         return rows
 
