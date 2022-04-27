@@ -33,7 +33,7 @@ class Window(arcade.Window):
     def setup(self):
         #sprite lists
         self.cars = arcade.SpriteList()
-        
+
         self.NEXT = self.init_map()
 
     def on_draw(self):
@@ -65,16 +65,17 @@ class Window(arcade.Window):
         random_code = random.choice(possibilities)
 
         #generate spritelist for the row
+        row_spritelist = []
         if random_code == self.ROAD:
-            for i in range(3):
+            for i in range(2):
                 random_car_sprite = random.choice(["Sprites/car1.png", "Sprites/car2.png", "Sprites/car3.png", 
                                         "Sprites/truck1.png", "Sprites/truck2.png"])
                 car = Car(random_car_sprite)
                 car.center_x = random.randint(0, SCREEN_WIDTH)
-                car.center_y = 300
                 self.cars.append(car)
+                row_spritelist.append(car)
         
-        self.ROWS.append(random_code)
+        self.ROWS.append((random_code, row_spritelist))
         
         #return possibilities for next row
         if random_code == self.SAFE: # prevent 2 safe rows in a row
@@ -93,7 +94,9 @@ class Window(arcade.Window):
         color_dict = {self.SAFE: arcade.color.AMAZON, self.ROAD: arcade.color.ARSENIC, self.RIVER: arcade.color.WATERSPOUT}
         for row in range(10):
             y_coord = y_interval * (2 * row + 1)
-            arcade.draw_rectangle_filled(SCREEN_WIDTH/2, y_coord, SCREEN_WIDTH, 2 * y_interval, color_dict[self.ROWS[row]])
+            arcade.draw_rectangle_filled(SCREEN_WIDTH/2, y_coord, SCREEN_WIDTH, 2 * y_interval, color_dict[self.ROWS[row][0]])
+            for sprite in self.ROWS[row][1]:
+                sprite.center_y = y_coord
 
 
     #cycle_map handles the "infinite" map
