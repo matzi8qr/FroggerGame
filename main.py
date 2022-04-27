@@ -1,3 +1,4 @@
+import code
 import arcade
 import random
 
@@ -13,20 +14,19 @@ def main():
 class Window(arcade.Window):
 
     ROWS = []
-    SAFE = arcade.color.AMAZON
-    ROAD = arcade.color.ARSENIC
-    RIVER = arcade.color.WATERSPOUT
+    SAFE = 0
+    ROAD = 1
+    RIVER = 2
 
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
     def setup(self):
-        self.init_map()
+        next = self.init_map()
 
     def on_draw(self):
         self.clear()
-        for row in self.ROWS:
-            row.draw()
+        self.draw_rows()
 
     def on_update(self, delta_time):
         #shh
@@ -48,21 +48,28 @@ class Window(arcade.Window):
     # Generates the next row based off of the passed possibilities, and returning the next possibilities.
     def generate_row(self, possibilities):
         #generate row based on colors possibilities
-        y_interval = SCREEN_HEIGHT/20.
-        random_color = random.choice(possibilities)
-        y_coord = y_interval * (2 * self.ROWS.__len__() + 1)
-        row_rect = arcade.create_rectangle_filled(SCREEN_WIDTH/2., y_coord, SCREEN_WIDTH, 2 * y_interval, random_color)
-        self.ROWS.append(row_rect)
+        random_code = random.choice(possibilities)
+        self.ROWS.append(random_code)
         
         #return possibilities for next row
-        if random_color == self.SAFE:
+        if random_code == self.SAFE: # prevent 2 safe rows in a row
             return [self.ROAD, self.RIVER]
-        if possibilities == [self.ROAD]:
-            return [self.SAFE, self.ROAD]
-        if random_color == self.ROAD:
+        if possibilities == [self.ROAD]: # prevent road from running into river, 
+                                         # allowing for safe if it was forced to be a road (below)
+            return [self.SAFE, self.SAFE, self.ROAD]
+        if random_code == self.ROAD: # insure roads generate in pairs
             return [self.ROAD]
-        if random_color == self.RIVER:
-            return [self.RIVER, self.SAFE]
+        if random_code == self.RIVER: # prevent river from running into road
+            return [self.SAFE, self.RIVER, self.SAFE, self.RIVER, self.SAFE]
+
+    #draw the map onto the screen
+    def draw_rows(self):
+        y_interval = SCREEN_HEIGHT/20.
+        color_dict = {self.SAFE: arcade.color.AMAZON, self.ROAD: arcade.color.ARSENIC, self.RIVER: arcade.color.WATERSPOUT}
+        for row in range(10):
+            y_coord = y_interval * (2 * row + 1)
+            arcade.draw_rectangle_filled(SCREEN_WIDTH/2, y_coord, SCREEN_WIDTH, 2 * y_interval, color_dict[self.ROWS[row]])
+
 
 
 
